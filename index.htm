@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+    <head>
+<meta name='apple-mobile-web-app-capable' content='yes' />
+<meta name='android-mobile-web-app-capable' content='yes' />
+<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />
+<meta name='android-mobile-web-app-status-bar-style' content='black-translucent' />
+        <title>Arduino thermostat & W5100 Ethernet Shield using AJAX</title>
+
+<style>
+h1
+{
+text-align: center;
+font-family:Arial, 'Trebuchet MS', Helvetica, sans-serif;
+}
+h2
+{
+text-align: center;
+font-family:Arial, 'Trebuchet MS', Helvetica, sans-serif;
+}
+a
+{
+text-decoration:none;
+width:75px;
+height:50px;
+border-color: black;
+border-top:2px solid;
+border-bottom:2px solid;
+border-right:2px solid;
+border-left:2px solid;
+border-radius:10px 10px 10px;
+-o-border-radius:10px 10px 10px;
+-webkit-border-radius:10px 10px 10px;
+font-family:'Trebuchet MS',Arial, Helvetica, sans-serif;
+-moz-border-radius:10px 10px 10px;
+background-color: #68a2d1;
+padding:8px;
+text-align:center;
+}
+/* unvisited link */
+a:link {
+color: white;
+}
+/* visited link */
+a:visited {
+color: blue;
+}
+/* mouse over link */
+a:hover {
+color: yellow;
+}
+/* selected link */
+a:active {
+color: red;
+}
+</style>
+
+
+        <script>
+		strLED1 = "";
+		strLED2 = "";
+		strLED3 = "";
+		strLED4 = "";
+		strLED5 = "";
+		var LED1_state = 0;
+		var LED2_state = 0;
+		var LED3_state = 0;
+		var LED4_state = 0;
+		var LED5_state = 0;
+		function GetArduinoIO()
+		{
+			nocache = "&nocache=" + Math.random() * 1000000;
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function()
+			{
+				if (this.readyState == 4) {
+					if (this.status == 200) {
+						if (this.responseXML != null) {
+							// XML file received - contains analog values, switch values and LED states
+							var count;
+							// get analog inputs
+							var num_an = this.responseXML.getElementsByTagName('analog').length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("analog")[count].innerHTML =
+									this.responseXML.getElementsByTagName('analog')[count].childNodes[0].nodeValue;
+							}
+							// get switch inputs
+							var num_an = this.responseXML.getElementsByTagName('switch').length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("switches")[count].innerHTML =
+									this.responseXML.getElementsByTagName('switch')[count].childNodes[0].nodeValue;
+							}
+							// LED 1
+							if (this.responseXML.getElementsByTagName('LED')[0].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED1").innerHTML = "tset +";
+								LED1_state = 1;
+							}
+							else {
+								document.getElementById("LED1").innerHTML = "tset +";
+								LED1_state = 0;
+							}
+							// LED 2
+							if (this.responseXML.getElementsByTagName('LED')[1].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED2").innerHTML = "tset -";
+								LED2_state = 1;
+							}
+							else {
+								document.getElementById("LED2").innerHTML = "tset -";
+								LED2_state = 0;
+							}
+							// LED 3
+							if (this.responseXML.getElementsByTagName('LED')[2].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED3").innerHTML = "dt +";
+								LED3_state = 1;
+							}
+							else {
+								document.getElementById("LED3").innerHTML = "dt +";
+								LED3_state = 0;
+							}
+							// LED 4
+							if (this.responseXML.getElementsByTagName('LED')[3].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED4").innerHTML = "dt -";
+								LED4_state = 1;
+							}
+							else {
+								document.getElementById("LED4").innerHTML = "dt -";
+								LED4_state = 0;
+							}
+							// LED 5
+							if (this.responseXML.getElementsByTagName('LED')[4].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED5").innerHTML = "Thermostat is ON ";
+								LED5_state = 1;
+							}
+							else {
+								document.getElementById("LED5").innerHTML = "Thermostat is OFF";
+								LED5_state = 0;
+							}
+						}
+					}
+				}
+			}
+			// send HTTP GET request with LEDs to switch on/off if any
+			request.open("GET", "ajax_inputs" + strLED1 + strLED2 + strLED3 + strLED4 + strLED5 + nocache, true);
+			request.send(null);
+			setTimeout('GetArduinoIO()', 1000);
+			strLED1 = "";
+			strLED2 = "";
+			strLED3 = "";
+			strLED4 = "";
+			strLED5 = "";
+		}
+		function GetButton1()
+		{
+			if (LED1_state === 1) {
+				LED1_state = 0;
+				strLED1 = "&LED1=0";
+			}
+			else {
+				LED1_state = 1;
+				strLED1 = "&LED1=1";
+			}
+		}
+		function GetButton2()
+		{
+			if (LED2_state === 1) {
+				LED2_state = 0;
+				strLED2 = "&LED2=0";
+			}
+			else {
+				LED2_state = 1;
+				strLED2 = "&LED2=1";
+			}
+		}
+		function GetButton3()
+		{
+			if (LED3_state === 1) {
+				LED3_state = 0;
+				strLED3 = "&LED3=0";
+			}
+			else {
+				LED3_state = 1;
+				strLED3 = "&LED3=1";
+			}
+		}
+		function GetButton4()
+		{
+			if (LED4_state === 1) {
+				LED4_state = 0;
+				strLED4 = "&LED4=0";
+			}
+			else {
+				LED4_state = 1;
+				strLED4 = "&LED4=1";
+			}
+		}
+		function GetButton5()
+		{
+			if (LED5_state === 1) {
+				LED5_state = 0;
+				strLED5 = "&LED5=0";
+			}
+			else {
+				LED5_state = 1;
+				strLED5 = "&LED5=1";
+			}
+		}
+
+
+	</script>
+	<style>
+		.IO_box {
+			float: left;
+			margin: 0 20px 20px 0;
+			border: 2px solid blue;
+			padding: 0 5px 0 5px;
+			width: 120px;
+		}
+		p, form, button {
+			font-size: 80%;
+			color: #252525;
+		}
+		.small_text {
+			font-size: 70%;
+			color: #737373;
+		}
+	</style>
+    </head>
+<body>
+    <body onload="GetArduinoIO()">
+<body style=background:#F0FFFF>    
+    <h2>Arduino Thermostat with Ethernet Shield
+<font color=orange>
+</br>Actual:
+ temperature = <span class="analog">...</span><sup>o</sup>C
+ &
+ humidity = <span class="analog">...</span>%RH<br />
+Thermostat : temperature set = <span class="analog">...</span><sup>o</sup>C & hysteresis = <span class="analog">...</span><sup>o</sup>C
+<br />
+<button type="button" id="LED1" onclick="GetButton1()">tset +</button>
+<button type="button" id="LED3" onclick="GetButton3()">dete +</button><br />
+<button type="button" id="LED2" onclick="GetButton2()">tset -</button>
+<button type="button" id="LED4" onclick="GetButton4()">dete -</button><br />
+<font color=green>
+<p><p><span class="switches">...</span></p></p></font>
+<font color=white>
+<button type="button" id="LED5" onclick="GetButton5()">Termostat control</button><br />
+</font>
+<font color=black>
+</h2><H4>
+<center>
+Sketch by Nicu Florica aka niq_ro.
+<p />
+Visit <a href=http://www.tehnic.go.ro target=blank>http://www.tehnic.go.ro</a> for more projects!</p>
+<p />
+<p />
+<H5>
+version. 6.3c3 / 09.10.2015<p>
+<p>
+
+
+    </body>
+</html>
