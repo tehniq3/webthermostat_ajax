@@ -211,6 +211,7 @@ void loop()
     } // end if (client)
     
  // if isn't client
+ t = dht.readTemperature();
 // read switches
 if ((LED_state[4] == 1) and (t > teset/10)) {
   digitalWrite(9, LOW);
