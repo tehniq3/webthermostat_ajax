@@ -47,8 +47,11 @@
 
 // MAC address from Ethernet shield sticker under board
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-IPAddress ip(192, 168, 0, 200); // IP address, may need to change depending on network
-EthernetServer server(80);  // create a server at port 80
+IPAddress ip(192, 168, 2, 199); // IP address, may need to change depending on network
+byte subnet[] = { 255, 255, 255, 0 };
+byte gateway[] = { 192, 168, 2, 1 };    
+EthernetServer server(8081);  // create a server at port 8080 (or directlly 80)
+
 File webFile;               // the web page file on the SD card
 char HTTP_req[REQ_BUF_SZ] = {0}; // buffered HTTP request stored as null terminated string
 char req_index = 0;              // index into HTTP_req buffer
@@ -111,11 +114,12 @@ void setup()
  //   pinMode(8, OUTPUT);
     pinMode(9, OUTPUT);
     
-    Ethernet.begin(mac, ip);  // initialize Ethernet device
-    server.begin();           // start to listen for clients
-
-//teset = 22.5;
-//dete = 0.5;
+ // start the Ethernet connection and the server:
+  Ethernet.begin(mac, ip, gateway, subnet);
+  server.begin();
+  
+   Serial.print("server is at ");
+  Serial.println(Ethernet.localIP());
 
 /*
 EEPROM.write(150,205);
