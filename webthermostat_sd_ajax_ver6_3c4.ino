@@ -78,6 +78,7 @@ int stare0; // before state
 
 float teset, dete;
 int teset0, teset1, teset2, teset3;
+int numere = 0;
 
 void setup()
 {
@@ -119,9 +120,13 @@ void setup()
   Ethernet.begin(mac, ip, gateway, subnet);
   server.begin();
   
-   Serial.print("server is at ");
-  Serial.println(Ethernet.localIP());
+Serial.print("server is at ");
+Serial.println(Ethernet.localIP());
 
+t = dht.readTemperature();
+Serial.print("t =");
+Serial.print(t);
+Serial.println("^C");
 
 //teset = 22.5;
 //dete = 0.5;
@@ -211,7 +216,15 @@ void loop()
     } // end if (client)
     
  // if isn't client
- t = dht.readTemperature();
+ numere = numere + 1;
+delay(1);
+if (numere > 32000) {
+t = dht.readTemperature();
+numere = 0;
+Serial.print("t =");
+Serial.print(t);
+Serial.println("^C");
+}
 // read switches
 if ((LED_state[4] == 1) and (t > teset/10)) {
   digitalWrite(9, LOW);
