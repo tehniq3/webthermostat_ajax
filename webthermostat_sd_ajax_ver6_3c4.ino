@@ -1,7 +1,6 @@
 /*--------------------------------------------------------------
   use: 
   Program:      eth_websrv_SD_Ajax_in_out
-
   Description:  Arduino web server that displays 4 analog inputs,
                 the state of 3 switches and controls 4 outputs,
                 2 using checkboxes and 2 using buttons.
@@ -26,7 +25,6 @@
                   http://arduino.cc/en/Reference/Ethernet
                 - SD Card library documentation:
                   http://arduino.cc/en/Reference/SD
-
   Date:         4 April 2013
   Modified:     19 June 2013
                 - removed use of the String class
@@ -50,8 +48,8 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 IPAddress ip(192, 168, 2, 199); // IP address, may need to change depending on network
 byte subnet[] = { 255, 255, 255, 0 };
 byte gateway[] = { 192, 168, 2, 1 };    
-EthernetServer server(8081);  // create a server at port 8080 (or directlly 80)
 
+EthernetServer server(8081);  // create a server at port 80
 File webFile;               // the web page file on the SD card
 char HTTP_req[REQ_BUF_SZ] = {0}; // buffered HTTP request stored as null terminated string
 char req_index = 0;              // index into HTTP_req buffer
@@ -114,12 +112,19 @@ void setup()
  //   pinMode(8, OUTPUT);
     pinMode(9, OUTPUT);
     
+ //   Ethernet.begin(mac, ip);  // initialize Ethernet device
+ //   server.begin();           // start to listen for clients
+
  // start the Ethernet connection and the server:
   Ethernet.begin(mac, ip, gateway, subnet);
   server.begin();
   
    Serial.print("server is at ");
   Serial.println(Ethernet.localIP());
+
+
+//teset = 22.5;
+//dete = 0.5;
 
 /*
 EEPROM.write(150,205);
@@ -132,6 +137,7 @@ teset0 = EEPROM.read(149);
 teset = 256*teset0+teset1;
 dete = EEPROM.read(151);
 
+LED_state[4] = 1; // thermostat is on AUTO mode
 }
 
 void loop()
@@ -203,6 +209,20 @@ void loop()
         delay(1);      // give the web browser time to receive the data
         client.stop(); // close the connection
     } // end if (client)
+    
+ // if isn't client
+// read switches
+if ((LED_state[4] == 1) and (t > teset/10)) {
+  digitalWrite(9, LOW);
+}  
+if ((LED_state[4] == 1) and (t < teset/10 - dete/10)) {
+  digitalWrite(9, HIGH);
+}  
+if (LED_state[4] == 0) {
+  digitalWrite(9, LOW);
+}  
+ 
+    
 }
 
 // checks if received HTTP request is switching on/off LEDs
